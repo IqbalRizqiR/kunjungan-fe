@@ -12,6 +12,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     { name: 'Events', path: '/admin/events' },
     { name: 'Institutions', path: '/admin/institutions' },
     { name: 'Packages', path: '/admin/packages' },
+    { name: 'Today Visits', path: '/admin/visits/todayVisit' },
   ];
   const navigate = useNavigate();
 

@@ -5,10 +5,6 @@ import AdminLayout from '../root';
 
 interface Visit {
     id: string;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    email: string;
     date: string;
     sessionId: string;
     institutionId: string;
@@ -16,6 +12,22 @@ interface Visit {
     specialRequest: string;
     visitors: string;
     status: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+    };
+    startTime: string;
+    endTime: string;
+    visitDate: string;
+    session?: {
+        startTime: string;
+        endTime: string;
+    };
+    institution?: {
+        name: string;
+    };
 }
 
 interface Session {
@@ -380,10 +392,9 @@ export default function AdminVisits() {
                                         <p className="text-sm text-gray-600">Date: {new Date(visit.visitDate).toLocaleDateString('id-ID')}</p>
 c                                        {(visit.sessionId || (startTime && endTime)) && (
                                             <p className="text-sm text-gray-600">
-                                                Time: {visit.startTime ?
+                                                Time: {visit.startTime !== "null" ?
                                                     `${visit.startTime} - ${visit.endTime}` :
-                                                    `${new Date(visit.sessionId).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${new Date(visit.sessionId).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`
-                                                    
+                                                    `${visit.session?.startTime} - ${visit.session?.endTime}`
                                                 }
                                             </p>
                                         )}

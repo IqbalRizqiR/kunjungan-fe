@@ -4,13 +4,30 @@ import { api } from '~/components/lib/api';
 import AdminLayout from '../root';
 
 interface Visit {
-  id: string;
-  name: string;
-  email: string;
-  institution: { name: string };
-  session: { startTime: string; endTime: string };
-  visitDate: string;
-  status: string;
+    id: string;
+    date: string;
+    sessionId: string;
+    institutionId: string;
+    packageOption: string;
+    specialRequest: string;
+    visitors: string;
+    status: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+    };
+    startTime: string;
+    endTime: string;
+    visitDate: string;
+    session?: {
+        startTime: string;
+        endTime: string;
+    };
+    institution?: {
+        name: string;
+    };
 }
 
 const ManageVisits = () => {
@@ -62,11 +79,11 @@ const ManageVisits = () => {
             {visits.length > 0 ? (
                 visits.map((visit) => (
               <tr key={visit.id} className="border-b">
-                <td className="p-2">{visit.user.firstName} {visit.user.lastname}</td>
+                <td className="p-2">{visit.user.firstName} {visit.user.lastName}</td>
                 <td className="p-2">{visit.user.email}</td>
-                <td className="p-2">{visit.institution.name}</td>
+                <td className="p-2">{visit.institution?.name}</td>
                 <td className="p-2">{new Date(visit.visitDate).toLocaleDateString()}</td>
-                <td className="p-2">{visit.session.startTime} - {visit.session.endTime}</td>
+                <td className="p-2">{visit.session?.startTime} - {visit.session?.endTime}</td>
                 <td className="p-2">{visit.status}</td>
                 <td className="p-2 space-x-2">
                   {visit.status === 'PENDING' && (

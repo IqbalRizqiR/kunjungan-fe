@@ -10,6 +10,7 @@ export default [
     route("/admin/institutions", "routes/admin/institusi/Admin.tsx"),
     route("/admin/packages", "routes/admin/paket/Admin.tsx"),
     route("/login", "routes/auth/Login.tsx"),
+    route("/admin/visits/todayVisit", "routes/admin/daftarKunjungan/Admin.tsx"),
     // route("/admin/visits/:visitId", "routes/admin/visits/VisitDetails.tsx"),
     // route("/admin/sessions/:sessionId", "routes/admin/session/SessionDetails.tsx"),
     // route("/admin/events/:eventId", "routes/admin/events/EventDetails.tsx"),
