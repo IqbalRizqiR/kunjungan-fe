@@ -52,7 +52,7 @@ export default function TodayVisits() {
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto p-6 bg-white">
-        <h1 className="text-3xl font-bold mb-6">Today’s Visits</h1>
+        <h1 className="text-3xl font-bold mb-6">Jadwal Kunjungan</h1>
         {visits.length === 0 ? (
           <p className="text-gray-600">No visits scheduled for today.</p>
         ) : (
