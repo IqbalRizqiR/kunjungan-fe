@@ -44,7 +44,7 @@ const ManageSettings = () => {
       <h1 className="text-2xl font-bold mb-4">Visit Settings</h1>
       <div className="space-y-2">
           <div className="flex items-center space-x-2">
-            <select className="border p-2 rounded w-full">
+            <select className="border p-2 rounded w-full" onChange={(e) => setAllowedDay(Number(e.target.value))}>
               <option value="">---- Pilih Hari diizinkan ----</option>
             {weekdays.map(day =>
                 <option

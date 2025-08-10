@@ -38,10 +38,10 @@ export default function TodayVisits() {
         const res = await api.get<Visit[]>('/visits/admin/list')
         const allVisits = res.data
         const todayKey = new Date().toISOString().split('T')[0]
-        const todays = allVisits.filter(v =>
-          v.visitDate.split('T')[0] === todayKey
+        const approved = allVisits.filter(v =>
+          v.status === 'APPROVED'
         )
-        setVisits(todays)
+        setVisits(approved)
       } catch (err) {
         console.error('Error fetching visits:', err)
       }
@@ -61,6 +61,8 @@ export default function TodayVisits() {
               <tr className="bg-gray-100">
                 <th className="p-2 text-left">Visitor</th>
                 <th className="p-2 text-left">Time</th>
+                <th className='p-2 text-left'>Date</th>
+                <th className='p-2 text-left'>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -71,6 +73,12 @@ export default function TodayVisits() {
                   </td>
                   <td className="p-2">
                     {v.startTime !== "null" ? `${v.startTime} - ${v.endTime}` : `${v.session?.startTime} - ${v.session?.endTime}`}
+                  </td>
+                  <td className="p-2">
+                    {new Date(v.visitDate).toLocaleDateString()}
+                  </td>
+                  <td className="p-2">
+                    {v.status}
                   </td>
                 </tr>
               ))}

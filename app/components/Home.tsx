@@ -29,7 +29,10 @@ interface Institution {
   packages: PackageOption[];
 }
 
+
+
 const BookingPage: React.FC = () => {
+
   const [calendarData, setCalendarData] = useState<CalendarItem[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [institutions, setInstitutions] = useState<Institution[]>([]);
@@ -189,30 +192,27 @@ const BookingPage: React.FC = () => {
       {/* ... bagian Hero Section ... */}
       <section className="hero-bg text-white py-16">
         <div className="max-w-10xl mx-auto px-6 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-4">
-            Selamat Datang Di SMK Telkom Malang
-          </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Website ini hadir sebagai pusat informasi dan dokumentasi kegiatan
-            kunjungan sekolah, baik kunjungan keluar (study tour, kunjungan
-            industri, museum, kampus, dll) maupun kunjungan tamu ke sekolah.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-20 justify-center">
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold">1000+</div>
-              <div className="text-sm text-blue-100">Siswa Aktif</div>
+            <h2 className="text-4xl font-bold mb-4">Selamat Datang Di SMK Telkom Malang</h2>
+            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                Website ini hadir sebagai pusat informasi dan dokumentasi kegiatan kunjungan sekolah, baik kunjungan keluar 
+                (study tour, kunjungan industri, museum, kampus, dll) maupun kunjungan tamu ke sekolah.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-20 justify-center">
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold">1000+</div>
+                    <div className="text-sm text-blue-100">Siswa Aktif</div>
+                </div>
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold">60+</div>
+                    <div className="text-sm text-blue-100">Guru</div>
+                </div>
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold">32 Th</div>
+                    <div className="text-sm text-blue-100">Berdiri Selama</div>
+                </div>
             </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold">60+</div>
-              <div className="text-sm text-blue-100">Guru</div>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold">32 Th</div>
-              <div className="text-sm text-blue-100">Berdiri Selama</div>
-            </div>
-          </div>
         </div>
-      </section>
+        </section>
 
       <main className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -288,7 +288,10 @@ const BookingPage: React.FC = () => {
                 return (
                   <button
                     key={idx}
-                    className={`p-2 rounded ${bg}`}
+                    className={`calendar-day rounded-lg border-2 p-2 text-center 
+                                                ${item.status === 'available' ? 'text-gray-300' : ''} 
+                                                ${item.status === 'full' ? 'date-fully-booked' : item.status === 'blocked' ? 'date-blocked' : 'date-available'} 
+                                                ${item.date === selectedDate ? 'date-selected' : ''}`}
                     disabled={item.status !== "available"}
                     onClick={() => handleSelectDate(new Date(item.date))}
                   >
@@ -524,36 +527,6 @@ const BookingPage: React.FC = () => {
             Informasi Event Sekolah
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="border border-red-200 bg-red-50 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span className="text-sm font-medium text-red-800">
-                  Tidak ada Visit tersedia
-                </span>
-              </div>
-              <h4 className="font-semibold text-gray-900">
-                DiesNatalis Moklet 33
-              </h4>
-              <p className="text-sm text-gray-600">Agustus 21, 2025</p>
-              <p className="text-sm text-gray-500 mt-1">
-                Merayakan ulang tahun sekolah ke 33
-              </p>
-            </div>
-            <div className="border border-red-200 bg-red-50 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span className="text-sm font-medium text-red-800">
-                  Tidak ada Visit tersedia
-                </span>
-              </div>
-              <h4 className="font-semibold text-gray-900">
-                DiesNatalis Moklet 33
-              </h4>
-              <p className="text-sm text-gray-600">Agustus 21, 2025</p>
-              <p className="text-sm text-gray-500 mt-1">
-                Merayakan ulang tahun sekolah ke 33
-              </p>
-            </div>
             <div className="border border-red-200 bg-red-50 rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>

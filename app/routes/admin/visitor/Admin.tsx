@@ -165,6 +165,7 @@ export default function AdminVisits() {
             setTotalCost(0);
             
             alert('Visit created successfully!');
+            window.location.reload();
         } catch (err) {
             console.error(err);
             alert('Could not create visit.');
