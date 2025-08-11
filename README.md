@@ -23,6 +23,9 @@ Install the dependencies:
 ```bash
 npm install
 ```
+login admin : 
+email : admin@admin.com
+password : password
 
 ### Development
 
