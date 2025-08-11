@@ -17,8 +17,8 @@ const LoginPage: React.FC = () => {
       const res = await api.post('/auth/login', { email, password });
       const token = res.data.access_token;
       localStorage.setItem('token', token);
+      window.location.href = '/admin'; // Redirect to admin visits page
       toast.success('Login successful');
-      router('/admin');
     } catch (error) {
       console.error(error);
       toast.error('Invalid email or password');

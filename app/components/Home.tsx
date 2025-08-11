@@ -29,6 +29,10 @@ interface Institution {
   packages: PackageOption[];
 }
 
+interface Tujuan {
+  id:string;
+  name:string;
+}
 
 
 const BookingPage: React.FC = () => {
@@ -42,6 +46,8 @@ const BookingPage: React.FC = () => {
   const [selectedInstitution, setSelectedInstitution] =
     useState<Institution | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<string>("");
+  const [tujuan, setTujuan] = useState<Tujuan[]>([]);
+  const [tujuanId, setTujuanId] = useState('');
 
   const [firstName, setUserFirstName] = useState<string>("");
   const [lastName, setUserLastName] = useState<string>("");
@@ -98,13 +104,15 @@ const BookingPage: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [allowedDaysRes, eventsRes, institutionsRes] = await Promise.all([
+      const [allowedDaysRes, eventsRes, institutionsRes, tujuanRes] = await Promise.all([
         api.get("/visit-settings/allowed-days"),
         api.get("/events"),
         api.get("/institutions"),
+        api.get("/tujuan")
       ]);
 
       setInstitutions(institutionsRes.data);
+      setTujuan(tujuanRes.data);
       handleMonthChange(new Date());
     };
 
@@ -155,6 +163,7 @@ const BookingPage: React.FC = () => {
         visitors: visitors,
         visitDate: selectedDate,
         email: userEmail,
+        tujuanId: tujuanId,
         sessionId: selectedSessionId,
         institutionId: selectedInstitution?.id,
         packageOption: selectedPackage,
@@ -482,6 +491,23 @@ const BookingPage: React.FC = () => {
                     </span>
                   </div>
                 )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Unit yang dituju
+                </label>
+                <select
+                  value={tujuanId || ""}
+                  onChange={(e) => {setTujuanId(e.target.value)}}
+                  className="border rounded p-2 w-full"
+                >
+                  <option value="">Select Tujuan</option>
+                  {tujuan.map((tujuan) => (
+                    <option key={tujuan.id} value={tujuan.id}>
+                      {tujuan.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

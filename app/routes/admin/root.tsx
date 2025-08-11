@@ -13,6 +13,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     { name: 'Institutions', path: '/admin/institutions' },
     { name: 'Packages', path: '/admin/packages' },
     { name: 'Today Visits', path: '/admin/visits/todayVisit' },
+    {name: "Tujuan", path: '/admin/tujuan' }
   ];
   const navigate = useNavigate();
 
@@ -24,8 +25,25 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     // redirect to login page
     navigate("/login");
   };
+  
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      setTimeout(() => navigate("/login"), 0);
+    } else {
+      fetch("/api/me", { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => {
+          if (!r.ok) throw new Error("unauthorized");
+        })
+        .catch(() => {
+          localStorage.removeItem("authToken");
+          navigate("/login");
+        });
+    }
+  }
 
   return (
+    <>
     <div className="flex min-h-screen">
       <aside className="w-64 bg-gray-800 text-white p-4 space-y-4">
         <h2 className="text-xl font-bold">Admin Panel</h2>
@@ -48,6 +66,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         {children}
       </main>
     </div>
+    </>
   );
 };
 

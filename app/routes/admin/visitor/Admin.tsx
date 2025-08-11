@@ -30,6 +30,11 @@ interface Visit {
     };
 }
 
+interface Tujuan {
+    id: string;
+    name: string;
+}
+
 interface Session {
     id: string;
     startTime: string;
@@ -64,6 +69,8 @@ export default function AdminVisits() {
     const [date, setDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [tujuan, setTujuan] = useState<Tujuan[]>([]);
+    const [tujuanId, setTujuanId] = useState('');
     const [selectedSessionId, setSelectedSessionId] = useState('');
     const [selectedInstitution, setSelectedInstitution] = useState<Institution | null>(null);
     const [selectedPackage, setSelectedPackage] = useState('');
@@ -76,11 +83,13 @@ export default function AdminVisits() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [visits, institutionsRes] = await Promise.all([
+                const [visits, institutionsRes, tujuanRes] = await Promise.all([
                     api.get('/visits/admin/list'),
                     api.get('/institutions'),
+                    api.get('/tujuan'),
                 ]);
                 setVisits(visits.data);
+                setTujuan(tujuanRes.data);
                 console.log('Fetched visits:', visits.data);
                 setInstitutions(institutionsRes.data);
             } catch (err) {
@@ -139,6 +148,7 @@ export default function AdminVisits() {
                 institutionId: selectedInstitution?.id,
                 packageOption: selectedPackage,
                 specialRequest: specialRequest,
+                tujuanId: tujuanId,
                 visitors: visitors,
                 visitDate: date,
                 startTime: startTime,
@@ -160,6 +170,7 @@ export default function AdminVisits() {
             setSelectedSessionId('');
             setSelectedInstitution(null);
             setSelectedPackage('');
+            setTujuanId('');
             setSpecialRequest('');
             setVisitors('1 person');
             setTotalCost(0);
@@ -344,6 +355,23 @@ export default function AdminVisits() {
                             Total Cost: <span className="font-bold">Rp {totalCost.toLocaleString('id-ID')}</span>
                         </div>
                     )}
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Unit yang dituju
+                    </label>
+                    <select
+                        value={tujuanId || ''}
+                        onChange={(e) => setTujuanId(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                        <option value="">Select Tujuan</option>
+                        {tujuan.map((tuju) => (
+                            <option key={tuju.id} value={tuju.id}>
+                                {tuju.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div>

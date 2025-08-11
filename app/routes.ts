@@ -8,6 +8,7 @@ export default [
     route("/admin/events", "routes/admin/events/Admin.tsx"),
     route("/admin/visits", "routes/admin/visitor/Admin.tsx"),
     route("/admin/institutions", "routes/admin/institusi/Admin.tsx"),
+    route("/admin/tujuan", "routes/admin/tujuan/Admin.tsx"),
     route("/admin/packages", "routes/admin/paket/Admin.tsx"),
     route("/login", "routes/auth/Login.tsx"),
     route("/admin/visits/todayVisit", "routes/admin/daftarKunjungan/Admin.tsx"),
