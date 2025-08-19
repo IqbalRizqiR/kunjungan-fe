@@ -67,6 +67,12 @@ const BookingPage: React.FC = () => {
     }));
   };
 
+  const firstDayOfMonth = new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth(),
+    1
+  ).getDay()
+
   const handleMonthChange = async (targetDate: Date) => {
     const [eventsRes] = await Promise.all([api.get("/events")]);
     const availabilityRes = await api.get("/visits/availability", {
@@ -288,6 +294,12 @@ const BookingPage: React.FC = () => {
               ))}
             </div>
             <div id="calendar" className="grid grid-cols-7 gap-2">
+              {
+                // render blank slots for days before the 1st
+                Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                  <div key={`blank-${i}`} />
+                ))
+              }
               {calendarData.map((item, idx) => {
                 let bg = "bg-gray-200";
                 if (item.status === "available") bg = "bg-green-400";

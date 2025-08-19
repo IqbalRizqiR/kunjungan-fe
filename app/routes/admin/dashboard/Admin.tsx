@@ -1,107 +1,180 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '~/components/lib/api';
 import AdminLayout from '../root';
+import StatsCards from '~/components/Charts';
+import Headers from '~/components/Headers';
+
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 interface Visit {
-    id: string;
-    date: string;
-    sessionId: string;
-    institutionId: string;
-    packageOption: string;
-    specialRequest: string;
-    visitors: string;
-    status: string;
-    user: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        phoneNumber: string;
-    };
-    startTime: string;
-    endTime: string;
-    visitDate: string;
-    session?: {
-        startTime: string;
-        endTime: string;
-    };
-    institution?: {
-        name: string;
-    };
+  id: string;
+  visitDate: string; // ISO
+  status: string;
+  session?: { startTime: string; endTime: string };
+  institution?: { name: string };
+  user: { firstName: string; lastName: string };
 }
 
 const ManageVisits = () => {
   const [visits, setVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
+
+  const redirectToLogin = () => (window.location.href = '/login');
 
   const fetchVisits = async () => {
     setLoading(true);
-    const res = await api.get('/visits/admin/list');
-    setVisits(res.data);
-    setLoading(false);
-  };
-
-  const handleApprove = async (id: string) => {
-    await api.post(`/visits/${id}/approve`);
-    toast.success('Visit Approved');
-    fetchVisits();
-  };
-
-  const handleReject = async (id: string) => {
-    await api.post(`/visits/${id}/reject`);
-    toast.success('Visit Rejected');
-    fetchVisits();
+    try {
+      const res = await api.get<Visit[]>('/visits/admin/list');
+      setVisits(res.data);
+    } catch (err: any) {
+      if (err.response?.status === 401) redirectToLogin();
+      else toast.error('Failed to fetch visits');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchVisits();
   }, []);
 
+  const handleApprove = async (id: string) => {
+    try {
+      await api.patch(`/visits/${id}/approve`);
+      toast.success('Visit Approved');
+      fetchVisits();
+      setSelectedVisit(null);
+    } catch (err: any) {
+      toast.error('Failed to approve visit');
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    try {
+      await api.patch(`/visits/${id}/reject`);
+      toast.success('Visit Rejected');
+      fetchVisits();
+      setSelectedVisit(null);
+    } catch (err: any) {
+      toast.error('Failed to reject visit');
+    }
+  };
+
+  
+
+  const events = useMemo(
+  () =>
+    visits.map(v => ({
+      id: v.id,
+      title: v.institution?.name || 'Visit',
+      start: v.visitDate,
+      color:
+        v.status === 'PENDING'
+          ? '#facc15'
+          : v.status === 'APPROVED'
+          ? '#22c55e'
+          : '#ef4444',
+    })),
+  [visits]
+);
+
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-bold mb-4">Manage Visits</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <table className="w-full bg-white shadow rounded">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2">Name</th>
-              <th className="p-2">Email</th>
-              <th className="p-2">Institution</th>
-              <th className="p-2">Date</th>
-              <th className="p-2">Session</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visits.length > 0 ? (
-                visits.map((visit) => (
-              <tr key={visit.id} className="border-b">
-                <td className="p-2">{visit.user.firstName} {visit.user.lastName}</td>
-                <td className="p-2">{visit.user.email}</td>
-                <td className="p-2">{visit.institution?.name}</td>
-                <td className="p-2">{new Date(visit.visitDate).toLocaleDateString()}</td>
-                <td className="p-2">{visit.session?.startTime} - {visit.session?.endTime}</td>
-                <td className="p-2">{visit.status}</td>
-                <td className="p-2 space-x-2">
-                  {visit.status === 'PENDING' && (
-                    <>
-                      <button onClick={() => handleApprove(visit.id)} className="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
-                      <button onClick={() => handleReject(visit.id)} className="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))
-            ) : (
-                <tr>
-                    <td colSpan={7} className="p-4 text-center">No visits found</td>
-                </tr>
+      <Headers />
+      <StatsCards />
+
+      <section className="mb-8 p-4">
+        <h2 className="font-bold text-lg mb-3">Agenda Kunjungan</h2>
+        {loading ? (
+          <p>Loading…</p>
+        ) : (
+          <FullCalendar
+            plugins={[dayGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            locale="id"
+            events={events}
+            eventClick={(info) => {
+              const visit = visits.find(v => v.id === info.event.id);
+              if (visit) setSelectedVisit(visit);
+            }}
+            height="auto"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,dayGridWeek,dayGridDay',
+            }}
+            dayMaxEventRows={3}
+            eventDisplay="block"
+            eventClassNames="rounded-md shadow-sm"
+          />
+        )}
+      </section>
+
+      {/* Modal detail kunjungan */}
+      {selectedVisit && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[400px]">
+            <h3 className="text-lg font-bold mb-3">
+              {selectedVisit.institution?.name}
+            </h3>
+            <p className="text-sm text-gray-600 mb-1">
+              {new Date(selectedVisit.visitDate).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </p>
+            {selectedVisit.session && (
+              <p className="text-sm mb-2">
+                {selectedVisit.session.startTime} – {selectedVisit.session.endTime}
+              </p>
             )}
-          </tbody>
-        </table>
+            <p className="text-sm mb-4">
+              Status:{' '}
+              <span
+                className={`font-bold ${
+                  selectedVisit.status === 'PENDING'
+                    ? 'text-yellow-500'
+                    : selectedVisit.status === 'APPROVED'
+                    ? 'text-green-600'
+                    : 'text-red-600'
+                }`}
+              >
+                {selectedVisit.status}
+              </span>
+            </p>
+
+            <div className="flex justify-end gap-2">
+              {selectedVisit.status === 'PENDING' && (
+                <>
+                  <button
+                    onClick={() => handleApprove(selectedVisit.id)}
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => handleReject(selectedVisit.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm"
+                  >
+                    Reject
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setSelectedVisit(null)}
+                className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md text-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </AdminLayout>
   );
